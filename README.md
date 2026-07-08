@@ -2,6 +2,77 @@
 
 基于LLM辅助生成的量化交易策略研究与回测系统。
 
+## 架构
+
+```mermaid
+flowchart TB
+    subgraph 数据层
+        A[腾讯K线API] --> B[data_fetcher.py<br/>fetch_stock_data()<br/>fetch_realtime_quote()]
+    end
+    
+    subgraph 指标层
+        B --> C[backtest_engine.py<br/>compute_indicators()<br/>MA/RSI/ATR/布林]
+        C --> D[evaluate_condition()]
+    end
+    
+    subgraph 策略层
+        E[Strategy ABC<br/>init_state()<br/>decide(row, state, ctx)] --> F[Buy / Sell / Hold]
+        E --> G[MartinGrid]
+        E --> H[NormalDCA]
+        E --> I[MADCA]
+        E --> J[RSIDCA]
+        E --> K[ValueAvg]
+        E --> L[DipBoost]
+        M[注册中心<br/>register()<br/>clear_registry()] --> E
+    end
+    
+    subgraph 回测层
+        C --> N[backtest_framework.py<br/>backtest(strategy, df)<br/>run_all(segments)]
+        O[成本模型<br/>佣金万三<br/>印花税千一<br/>滑点0.1%] --> N
+        P[分时段回测<br/>每半年重置] --> N
+    end
+    
+    subgraph 结果层
+        N --> Q[性能指标<br/>Alpha / 夏普 / 卡尔马<br/>最大回撤 / 交易次数]
+        N --> R[策略对比<br/>多策略排名]
+        N --> S[交易记录<br/>买卖明细]
+        N --> T[成本分析<br/>累计摩擦]
+        N --> U[DataFrame]
+    end
+    
+    subgraph 模拟盘
+        V[paper_trading/<br/>daily_run.py<br/>state.json]
+    end
+    
+    E --> N
+    N -.-> V
+
+    style A fill:#f5f5f5,stroke:#666
+    style B fill:#fff2cc,stroke:#d6b656
+    style C fill:#fff2cc,stroke:#d6b656
+    style D fill:#fff2cc,stroke:#d6b656
+    style E fill:#fff2cc,stroke:#d6b656
+    style F fill:#f8cecc,stroke:#b85450
+    style G fill:#fff2cc,stroke:#d6b656
+    style H fill:#fff2cc,stroke:#d6b656
+    style I fill:#fff2cc,stroke:#d6b656
+    style J fill:#fff2cc,stroke:#d6b656
+    style K fill:#fff2cc,stroke:#d6b656
+    style L fill:#fff2cc,stroke:#d6b656
+    style M fill:#fff2cc,stroke:#d6b656
+    style N fill:#fff2cc,stroke:#d6b656
+    style O fill:#f8cecc,stroke:#b85450
+    style P fill:#fff2cc,stroke:#d6b656
+    style Q fill:#fff2cc,stroke:#d6b656
+    style R fill:#fff2cc,stroke:#d6b656
+    style S fill:#fff2cc,stroke:#d6b656
+    style T fill:#f8cecc,stroke:#b85450
+    style U fill:#f5f5f5,stroke:#666
+    style V fill:#ffe6cc,stroke:#d79b00
+```
+
+> 可编辑的drawio文件: [docs/architecture.drawio](docs/architecture.drawio)
+
 ## 核心特性
 
 - **通用回测框架**: 策略注册制，支持多策略对比
