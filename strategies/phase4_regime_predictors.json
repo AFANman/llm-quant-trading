@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "phase": 4,
+    "objective": "提前5-10天预判市场环境切换（上涨/下跌/震荡），替代滞后的MA20/MA60交叉判断",
+    "background": "Phase 3结论：LLM策略下跌市Alpha+46.5%，上涨市跑输。MA20>MA60判断滞后5-15天，错过最佳切换窗口。",
+    "available_fields": ["ma5", "ma10", "ma20", "ma60", "rsi", "vol_ratio", "atr", "bb_upper", "bb_lower", "bb_mid", "pct_change", "pct_5d", "pct_20d", "price_vs_ma60", "open", "high", "low", "close", "volume"],
+    "design_principle": "捕捉'转折前兆'而非'趋势确认'——利用动量加速度、量价背离、极值回归等领先信号"
+  },
+  "strategies": [
+    {
+      "name": "前瞻择时-动量加速度",
+      "type": "regime_predictor",
+      "description": "通过短期动量(pct_5d)与中期动量(pct_20d)的相对强弱变化，捕捉趋势加速/减速的前兆信号。核心逻辑：动量的'二阶导数'（加速度）领先于趋势本身。当5日涨幅显著超越20日涨幅的周均节奏时，说明趋势正在加速；反之则减速。结合price_vs_ma60的位置信息，可区分'底部加速回升'与'顶部加速冲顶'。",
+      "regime_signals": {
+        "uptrend": [
+          {
+            "indicator": "pct_5d",
+            "operator": ">",
+            "value": 0,
+            "comment": "近5日收益为正，短期方向向上"
+          },
+          {
+            "indicator": "pct_5d",
+            "operator": ">",
+            "derived": "pct_20d / 4",
+            "comment": "5日涨幅超过20日涨幅的周均节奏，动量在加速（核心前瞻信号）"
+          },
+          {
+            "indicator": "price_vs_ma60",
+            "operator": "between",
+            "value": [-0.05, 0.03],
+            "comment": "价格仍在MA60附近或略下方，尚未远离均线——说明趋势刚起步，非顶部"
+          },
+          {
+            "indicator": "pct_20d",
+            "operator": "<",
+            "value": 0.15,
+            "comment": "20日涨幅未过度延伸，排除已经大幅上涨后的假加速"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "pct_5d",
+            "operator": "<",
+            "value": 0,
+            "comment": "近5日收益为负，短期方向向下"
+          },
+          {
+            "indicator": "pct_5d",
+            "operator": "<",
+            "derived": "pct_20d / 4",
+            "comment": "5日涨幅低于20日涨幅的周均节奏，动量在减速（核心前瞻信号）"
+          },
+          {
+            "indicator": "price_vs_ma60",
+            "operator": ">",
+            "value": 0.05,
+            "comment": "价格远高于MA60，市场过度延伸后开始回落——高位减速是见顶前兆"
+          },
+          {
+            "indicator": "pct_20d",
+            "operator": ">",
+            "value": 0,
+            "comment": "中期仍为正收益，说明是从上涨趋势中开始减速，而非已确认下跌"
+          }
+        ],
+        "sideways": [
+          {
+            "indicator": "pct_5d",
+            "operator": "between",
+            "value": [-0.02, 0.02],
+            "comment": "5日波动很小，无明显方向"
+          },
+          {
+            "indicator": "pct_20d",
+            "operator": "between",
+            "value": [-0.05, 0.05],
+            "comment": "20日也无明显趋势"
+          },
+          {
+            "indicator": "price_vs_ma60",
+            "operator": "between",
+            "value": [-0.03, 0.03],
+            "comment": "价格紧贴MA60，市场在均线附近纠缠，无趋势"
+          }
+        ]
+      },
+      "lookahead_days": 5,
+      "rationale": "动量加速度(pct_5d vs pct_20d/4)本质是趋势的'二阶导数'。物理学中加速度变化领先于速度变化，市场同理：当短期动量开始超越中期节奏时，趋势正在积蓄力量，此时MA20/MA60可能尚未交叉，但价格已在加速远离均衡位置。结合price_vs_ma60的位置约束，可以区分'底部启动加速'（看多）和'顶部冲顶加速'（看空），避免在趋势末端误判。"
+    },
+    {
+      "name": "前瞻择时-量价异动",
+      "type": "regime_predictor",
+      "description": "通过成交量比率(vol_ratio)的异常变化和ATR的扩张/收缩周期，捕捉资金流入流出的前兆信号。核心逻辑：量能变化领先于价格变化——机构建仓/出货时，成交量先于价格异动。ATR从压缩到扩张往往预示趋势突破方向，而从高位回落预示趋势衰竭。",
+      "regime_signals": {
+        "uptrend": [
+          {
+            "indicator": "vol_ratio",
+            "operator": ">",
+            "value": 1.3,
+            "comment": "成交量放大至均量的1.3倍以上，资金开始活跃流入"
+          },
+          {
+            "indicator": "pct_change",
+            "operator": ">",
+            "value": 0,
+            "comment": "放量伴随正收益——量价齐升，确认资金方向"
+          },
+          {
+            "indicator": "atr",
+            "operator": ">",
+            "derived": "ma20 * 0.015",
+            "comment": "ATR开始扩张（超过MA20的1.5%），波动率从压缩状态释放"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value": "bb_mid",
+            "comment": "价格站上布林中轨，配合放量说明向上突破概率大"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "vol_ratio",
+            "operator": ">",
+            "value": 1.5,
+            "comment": "成交量异常放大（>1.5倍），高位放量往往是机构出货信号"
+          },
+          {
+            "indicator": "pct_change",
+            "operator": "between",
+            "value": [-0.01, 0.01],
+            "comment": "放量但价格涨幅很小（量价背离），说明上方抛压沉重，筹码在换手"
+          },
+          {
+            "indicator": "atr",
+            "operator": ">",
+            "derived": "ma20 * 0.025",
+            "comment": "ATR大幅扩张（>MA20的2.5%），波动率飙升预示恐慌和趋势转折"
+          },
+          {
+            "indicator": "price_vs_ma60",
+            "operator": ">",
+            "value": 0.08,
+            "comment": "价格远高于MA60时出现量价背离，高位放量滞涨是经典顶部信号"
+          }
+        ],
+        "sideways": [
+          {
+            "indicator": "vol_ratio",
+            "operator": "<",
+            "value": 0.8,
+            "comment": "成交量萎缩至均量80%以下，市场参与意愿低"
+          },
+          {
+            "indicator": "atr",
+            "operator": "<",
+            "derived": "ma20 * 0.012",
+            "comment": "ATR收缩至低位（<MA20的1.2%），波动率压缩——盘整特征"
+          },
+          {
+            "indicator": "bb_upper - bb_lower",
+            "operator": "<",
+            "derived": "bb_mid * 0.06",
+            "comment": "布林带宽度收窄（带宽<中轨6%），典型的挤压状态，等待方向选择"
+          }
+        ]
+      },
+      "lookahead_days": 7,
+      "rationale": "量在价先是经典市场规律：机构资金建仓时，成交量先放大，价格随后跟上（领先5-7天）；出货时同理，高位放量但价格滞涨是筹码从强手转移到弱手的信号。ATR的压缩-扩张周期也是领先指标：波动率压缩（布林带收窄）意味着市场在积蓄能量，随后的扩张方向即为趋势方向。将vol_ratio与pct_change组合可识别'放量滞涨'这种经典的转折前兆，比单纯看MA交叉早5-10天。"
+    },
+    {
+      "name": "前瞻择时-RSI极值与布林带位置",
+      "type": "regime_predictor",
+      "description": "通过RSI从极端区域的回归方向和价格在布林带中的相对位置，捕捉超买超卖后的均值回归信号。核心逻辑：RSI极值回归是最经典的领先信号——当RSI从<35区域回升时，反弹已酝酿但MA尚未反应；当RSI从>65区域回落时，调整已开始但趋势指标仍显示上涨。结合布林带位置可过滤假信号。",
+      "regime_signals": {
+        "uptrend": [
+          {
+            "indicator": "rsi",
+            "operator": "between",
+            "value": [35, 50],
+            "comment": "RSI从超卖区(<30)回升至35-50区间，反弹动能已确认但尚未过热"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value": "bb_lower",
+            "comment": "价格已脱离布林下轨，开始向上回归"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value": "bb_mid",
+            "comment": "价格仍在中轨下方，说明反弹刚起步，空间充足"
+          },
+          {
+            "indicator": "rsi",
+            "operator": ">",
+            "derived": "rsi_5d_ago",
+            "comment": "RSI当前值高于5天前，确认RSI处于回升趋势（非仍在下跌途中）"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "rsi",
+            "operator": "between",
+            "value": [55, 70],
+            "comment": "RSI从超买区(>70)回落至55-70区间，上涨动能开始衰减"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value": "bb_upper",
+            "comment": "价格已脱离布林上轨，开始向下回归"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value": "bb_mid",
+            "comment": "价格仍在中轨上方，说明调整刚开始，尚未确认下跌"
+          },
+          {
+            "indicator": "rsi",
+            "operator": "<",
+            "derived": "rsi_5d_ago",
+            "comment": "RSI当前值低于5天前，确认RSI处于回落趋势（从高位掉头向下）"
+          }
+        ],
+        "sideways": [
+          {
+            "indicator": "rsi",
+            "operator": "between",
+            "value": [40, 60],
+            "comment": "RSI在中性区间震荡，无明确超买超卖信号"
+          },
+          {
+            "indicator": "close",
+            "operator": "between",
+            "derived_values": ["bb_mid - (bb_upper - bb_mid) * 0.3", "bb_mid + (bb_upper - bb_mid) * 0.3"],
+            "comment": "价格在布林带中轨附近窄幅波动（中轨±30%带宽内），典型盘整"
+          },
+          {
+            "indicator": "bb_upper - bb_lower",
+            "operator": "<",
+            "derived": "bb_mid * 0.08",
+            "comment": "布林带宽度适中偏窄，波动率不高，无趋势性行情"
+          }
+        ]
+      },
+      "lookahead_days": 5,
+      "rationale": "RSI极值回归是市场最可靠的领先指标之一。关键洞察：RSI从超卖区(<30)回升到35-50时，MA20可能仍在MA60下方（趋势指标仍显示下跌），但实际上反弹已经启动——这就是RSI领先于MA的地方。同理，RSI从>70回落到55-70时，MA20仍在MA60上方（趋势指标仍显示上涨），但调整已经开始。结合布林带位置可以确认：价格从下轨反弹+RSI回升=看涨前兆；价格从上轨回落+RSI回落=看跌前兆。这种组合信号通常领先MA交叉5-10天，正好覆盖我们的择时窗口。"
+    }
+  ],
+  "implementation_notes": {
+    "signal_aggregation": "建议三个策略投票制：至少2个策略发出同方向信号时确认环境切换",
+    "derived_fields_needed": {
+      "pct_20d / 4": "20日涨幅折算为周均涨幅，用作加速度基准",
+      "rsi_5d_ago": "5天前的RSI值，用于判断RSI方向（需历史数据回溯）",
+      "bb_upper - bb_lower": "布林带宽度，需实时计算",
+      "ma20 * 0.015": "ATR的动态阈值，基于价格水平自适应"
+    },
+    "transition_rules": {
+      "confirm_days": 2,
+      "description": "信号需连续2天触发才确认环境切换，避免单日噪音"
+    },
+    "priority_order": [
+      "策略3(RSI极值) > 策略1(动量加速度) > 策略2(量价异动)",
+      "理由：RSI极值回归信号最稳定，动量加速度次之，量价信号噪音较大但确认性强"
+    ]
+  }
+}

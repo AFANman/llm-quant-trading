@@ -1,0 +1,15 @@
+{
+  "name": "RSI超卖反弹策略",
+  "description": "RSI低于30且成交量萎缩时买入，RSI高于70或持有5天后卖出",
+  "entry_conditions": [
+    {"indicator": "rsi", "operator": "<", "value": 30},
+    {"indicator": "vol_ratio", "operator": "<", "value": 0.8}
+  ],
+  "exit_conditions": [
+    {"indicator": "rsi", "operator": ">", "value": 70}
+  ],
+  "stop_loss": 0.05,
+  "take_profit": 0.15,
+  "hold_days": 5,
+  "position_size": 0.3
+}

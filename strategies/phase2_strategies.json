@@ -1,0 +1,93 @@
+[
+  {
+    "name": "温和超卖反弹",
+    "description": "RSI低于40且缩量时入场，捕捉超卖后的温和反弹。RSI<40覆盖约30%交易日，vol_ratio<1.0覆盖约50%，交集约15%，预计触发100+次信号。",
+    "entry_conditions": [
+      {"indicator": "rsi", "operator": "<", "value": 40},
+      {"indicator": "vol_ratio", "operator": "<", "value": 1.0}
+    ],
+    "exit_conditions": [
+      {"indicator": "rsi", "operator": ">", "value": 60}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  },
+  {
+    "name": "趋势跟随宽松版",
+    "description": "价格高于MA60且短期动量为正时入场，跟随上升趋势。price_vs_ma60>0覆盖约50%交易日，pct_5d>0.01覆盖约40%，交集约20%，预计触发140+次信号。",
+    "entry_conditions": [
+      {"indicator": "price_vs_ma60", "operator": ">", "value": 0.02},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.01}
+    ],
+    "exit_conditions": [
+      {"indicator": "pct_5d", "operator": "<", "value": -0.03}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  },
+  {
+    "name": "布林带均值回归",
+    "description": "价格显著低于均线且RSI偏低时入场，捕捉均值回归。用price_vs_ma60<-0.05近似价格跌破布林带下轨，RSI<45确认超卖。交集约8%，预计触发55+次信号。",
+    "entry_conditions": [
+      {"indicator": "price_vs_ma60", "operator": "<", "value": -0.05},
+      {"indicator": "rsi", "operator": "<", "value": 45}
+    ],
+    "exit_conditions": [
+      {"indicator": "price_vs_ma60", "operator": ">", "value": 0.02}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  },
+  {
+    "name": "动量捕捉宽松版",
+    "description": "放量且短期涨幅明显时入场，捕捉强势动量延续。vol_ratio>1.3覆盖约30%交易日，pct_5d>0.02覆盖约30%，交集约9%，预计触发60+次信号。",
+    "entry_conditions": [
+      {"indicator": "vol_ratio", "operator": ">", "value": 1.3},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.02}
+    ],
+    "exit_conditions": [
+      {"indicator": "vol_ratio", "operator": "<", "value": 0.8}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  },
+  {
+    "name": "低位企稳",
+    "description": "价格低于MA60、RSI偏低且当日跌幅收窄时入场，捕捉底部企稳反弹。三个条件均较宽松：price_vs_ma60<0覆盖50%，rsi<45覆盖40%，pct_change>-0.01覆盖70%，交集约14%，预计触发100+次信号。",
+    "entry_conditions": [
+      {"indicator": "price_vs_ma60", "operator": "<", "value": 0},
+      {"indicator": "rsi", "operator": "<", "value": 45},
+      {"indicator": "pct_change", "operator": ">", "value": -0.01}
+    ],
+    "exit_conditions": [
+      {"indicator": "pct_change", "operator": ">", "value": 0.02}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  },
+  {
+    "name": "综合信号简化版",
+    "description": "温和放量且短期有正收益时入场，综合量价信号。vol_ratio>1.2覆盖约35%交易日，pct_5d>0.01覆盖约40%，交集约14%，预计触发100+次信号。",
+    "entry_conditions": [
+      {"indicator": "vol_ratio", "operator": ">", "value": 1.2},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.01}
+    ],
+    "exit_conditions": [
+      {"indicator": "rsi", "operator": ">", "value": 65}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.20,
+    "hold_days": 10,
+    "position_size": 0.3
+  }
+]

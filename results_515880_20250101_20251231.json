@@ -1,0 +1,282 @@
+[
+  {
+    "strategy": {
+      "name": "均线多头突破",
+      "description": "经典均线多头排列策略：MA5>MA10>MA20>MA60形成完美多头排列，且价格站上MA5，说明趋势强劲。入场后持有至趋势破坏（跌破MA20）。上涨市中多头排列频繁出现，此策略能充分捕捉主升浪。",
+      "entry_conditions": [
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma5"
+        },
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "ma10",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "ma20",
+          "operator": ">",
+          "value_indicator": "ma60"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "ma20"
+        }
+      ],
+      "position_size": 0.9,
+      "stop_loss": -0.1,
+      "take_profit": 0.3,
+      "hold_days": 25
+    },
+    "metrics": {
+      "strategy_name": "均线多头突破",
+      "total_return_pct": 33.35,
+      "annual_return_pct": 33.57,
+      "max_drawdown_pct": -18.42,
+      "sharpe_ratio": 1.402,
+      "num_trades": 69,
+      "win_rate_pct": 57.97,
+      "avg_pnl_pct": 0.5,
+      "avg_win_pct": 2.11,
+      "avg_loss_pct": -1.73,
+      "profit_factor": 1.22,
+      "final_capital": 133353.5,
+      "benchmark_return_pct": 133.33,
+      "alpha_pct": -99.98
+    }
+  },
+  {
+    "strategy": {
+      "name": "海龟趋势跟踪",
+      "description": "经典海龟交易法则变体：价格创20日新高（用pct_20d>8%近似，表示当前价格远高于20日前，处于近期高位区域）且整体趋势向上（close>ma60）。趋势跟踪策略不预测顶部，只在趋势反转时离场。宽止损-12%容忍正常回撤，让利润充分奔跑。",
+      "entry_conditions": [
+        {
+          "indicator": "pct_20d",
+          "operator": ">",
+          "value": 0.08
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma60"
+        },
+        {
+          "indicator": "price_vs_ma60",
+          "operator": ">",
+          "value": 0.05
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.05
+        }
+      ],
+      "position_size": 0.85,
+      "stop_loss": -0.12,
+      "take_profit": 0.35,
+      "hold_days": 30
+    },
+    "metrics": {
+      "strategy_name": "海龟趋势跟踪",
+      "total_return_pct": 65.25,
+      "annual_return_pct": 65.71,
+      "max_drawdown_pct": -11.3,
+      "sharpe_ratio": 2.122,
+      "num_trades": 93,
+      "win_rate_pct": 60.22,
+      "avg_pnl_pct": 0.67,
+      "avg_win_pct": 2.31,
+      "avg_loss_pct": -1.8,
+      "profit_factor": 1.28,
+      "final_capital": 165248.36,
+      "benchmark_return_pct": 133.33,
+      "alpha_pct": -68.08
+    }
+  },
+  {
+    "strategy": {
+      "name": "布林带突破放量",
+      "description": "布林带上轨突破策略：价格突破布林带上轨（bb_upper）说明走势异常强劲，超出正常波动范围。配合放量（vol_ratio>1.3）确认突破有效性，避免假突破。出场信号为价格回落至中轨（bb_mid），说明超常动量消退。",
+      "entry_conditions": [
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "bb_upper"
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.3
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma20"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_mid"
+        }
+      ],
+      "position_size": 0.8,
+      "stop_loss": -0.08,
+      "take_profit": 0.25,
+      "hold_days": 15
+    },
+    "metrics": {
+      "strategy_name": "布林带突破放量",
+      "total_return_pct": -3.41,
+      "annual_return_pct": -3.43,
+      "max_drawdown_pct": -6.28,
+      "sharpe_ratio": -0.747,
+      "num_trades": 14,
+      "win_rate_pct": 35.71,
+      "avg_pnl_pct": -0.29,
+      "avg_win_pct": 1.97,
+      "avg_loss_pct": -1.54,
+      "profit_factor": 1.28,
+      "final_capital": 96585.35,
+      "benchmark_return_pct": 133.33,
+      "alpha_pct": -136.75
+    }
+  },
+  {
+    "strategy": {
+      "name": "RSI动量持续",
+      "description": "RSI高位动量延续策略：RSI>60说明处于强势区间（非超买反转），近5日涨幅为正（pct_5d>0）说明动量仍在持续，价格在MA20上方确认中期趋势向上。RSI强势股往往强者恒强，不急于在RSI>70时就离场。出场条件：RSI跌破50说明动量转弱。",
+      "entry_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 60
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.01
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma60"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 50
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "ma20"
+        }
+      ],
+      "position_size": 0.75,
+      "stop_loss": -0.08,
+      "take_profit": 0.22,
+      "hold_days": 15
+    },
+    "metrics": {
+      "strategy_name": "RSI动量持续",
+      "total_return_pct": 47.19,
+      "annual_return_pct": 47.51,
+      "max_drawdown_pct": -13.36,
+      "sharpe_ratio": 2.054,
+      "num_trades": 68,
+      "win_rate_pct": 60.29,
+      "avg_pnl_pct": 0.78,
+      "avg_win_pct": 2.17,
+      "avg_loss_pct": -1.33,
+      "profit_factor": 1.63,
+      "final_capital": 147194.13,
+      "benchmark_return_pct": 133.33,
+      "alpha_pct": -86.14
+    }
+  },
+  {
+    "strategy": {
+      "name": "放量阳线突破",
+      "description": "放量大阳线突破策略：单日涨幅超2%（pct_change>0.02）配合成交量放大1.5倍以上（vol_ratio>1.5），形成有效突破信号。价格需在MA20上方确保中期趋势向上。放量阳线是机构资金入场的典型信号，后续往往有持续性行情。出场以跌破MA10为准，快速锁定利润。",
+      "entry_conditions": [
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.02
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.5
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "open"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.04
+        }
+      ],
+      "position_size": 0.85,
+      "stop_loss": -0.1,
+      "take_profit": 0.25,
+      "hold_days": 20
+    },
+    "metrics": {
+      "strategy_name": "放量阳线突破",
+      "total_return_pct": -4.62,
+      "annual_return_pct": -4.64,
+      "max_drawdown_pct": -16.18,
+      "sharpe_ratio": -0.378,
+      "num_trades": 16,
+      "win_rate_pct": 50.0,
+      "avg_pnl_pct": -0.27,
+      "avg_win_pct": 2.78,
+      "avg_loss_pct": -3.31,
+      "profit_factor": 0.84,
+      "final_capital": 95384.65,
+      "benchmark_return_pct": 133.33,
+      "alpha_pct": -137.95
+    }
+  }
+]

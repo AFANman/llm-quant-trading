@@ -1,0 +1,965 @@
+[
+  {
+    "strategy": {
+      "name": "自适应布林带均值回归",
+      "description": "基于布林带的自适应均值回归策略。下跌/震荡市在价格触及下轨时抄底（均值回归逻辑强），上涨市在价格回踩中轨时加仓跟随趋势，避免错过主升浪。止盈止损根据市场环境动态调整。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 35
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.2
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_mid"
+        },
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 50
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.02
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 30
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.5
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 40
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": "<",
+          "value": -0.05
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "bb_upper"
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 75
+        }
+      ],
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.8,
+          "take_profit": 0.3,
+          "hold_days": 25
+        },
+        "downtrend": {
+          "position_size": 0.2,
+          "take_profit": 0.12,
+          "hold_days": 8
+        },
+        "sideways": {
+          "position_size": 0.4,
+          "take_profit": 0.18,
+          "hold_days": 15
+        }
+      },
+      "stop_loss": 0.08
+    },
+    "metrics": {
+      "strategy_name": "自适应布林带均值回归",
+      "total_return_pct": -13.02,
+      "annual_return_pct": -4.55,
+      "max_drawdown_pct": -14.7,
+      "sharpe_ratio": -1.415,
+      "num_trades": 14,
+      "win_rate_pct": 21.43,
+      "avg_pnl_pct": -2.66,
+      "avg_win_pct": 4.28,
+      "avg_loss_pct": -4.56,
+      "profit_factor": 0.94,
+      "final_capital": 86983.89,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 22.34
+    }
+  },
+  {
+    "strategy": {
+      "name": "自适应趋势跟随",
+      "description": "趋势跟随策略的自适应版本。上涨市重仓跟随主升浪（MA5>MA20金叉买入），下跌市仅在超跌反弹时轻仓试探，震荡市在趋势确认后中等仓位跟进。核心改进：上涨市延长持有期至30天，避免过早止盈。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "ma10",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.03
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma5"
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.0
+        },
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.0
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.05
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 50
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "ma10",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.3
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "ma5",
+          "operator": "<",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.03
+        }
+      ],
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.9,
+          "take_profit": 0.35,
+          "hold_days": 30
+        },
+        "downtrend": {
+          "position_size": 0.15,
+          "take_profit": 0.1,
+          "hold_days": 7
+        },
+        "sideways": {
+          "position_size": 0.4,
+          "take_profit": 0.15,
+          "hold_days": 12
+        }
+      },
+      "stop_loss": 0.07
+    },
+    "metrics": {
+      "strategy_name": "自适应趋势跟随",
+      "total_return_pct": -9.95,
+      "annual_return_pct": -3.44,
+      "max_drawdown_pct": -22.48,
+      "sharpe_ratio": -0.424,
+      "num_trades": 16,
+      "win_rate_pct": 31.25,
+      "avg_pnl_pct": -0.82,
+      "avg_win_pct": 10.05,
+      "avg_loss_pct": -5.75,
+      "profit_factor": 1.75,
+      "final_capital": 90051.28,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 25.41
+    }
+  },
+  {
+    "strategy": {
+      "name": "自适应动量策略",
+      "description": "动量策略的自适应版本。上涨市追涨强势股（5日涨幅>5%且量能配合），持有期大幅延长让利润奔跑；震荡市快进快出捕捉短期动量（5日涨幅>3%）；下跌市不追涨，仅在强反弹信号出现时轻仓介入。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.03
+        },
+        {
+          "indicator": "pct_20d",
+          "operator": ">",
+          "value": 0.05
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.2
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.05
+        },
+        {
+          "indicator": "pct_20d",
+          "operator": ">",
+          "value": 0.1
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.1
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma5"
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.08
+        },
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 65
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 2.0
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "pct_5d",
+          "operator": ">",
+          "value": 0.03
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 50
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.3
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.04
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 80
+        }
+      ],
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.85,
+          "take_profit": 0.4,
+          "hold_days": 25
+        },
+        "downtrend": {
+          "position_size": 0.1,
+          "take_profit": 0.1,
+          "hold_days": 5
+        },
+        "sideways": {
+          "position_size": 0.35,
+          "take_profit": 0.12,
+          "hold_days": 8
+        }
+      },
+      "stop_loss": 0.06
+    },
+    "metrics": {
+      "strategy_name": "自适应动量策略",
+      "total_return_pct": -8.23,
+      "annual_return_pct": -2.83,
+      "max_drawdown_pct": -24.22,
+      "sharpe_ratio": -0.453,
+      "num_trades": 15,
+      "win_rate_pct": 40.0,
+      "avg_pnl_pct": 0.29,
+      "avg_win_pct": 10.37,
+      "avg_loss_pct": -6.43,
+      "profit_factor": 1.61,
+      "final_capital": 91770.45,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 27.13
+    }
+  },
+  {
+    "strategy": {
+      "name": "自适应RSI反转",
+      "description": "RSI反转策略的自适应版本。下跌市在RSI<30极度超卖时抄底（均值回归概率高），上涨市在RSI回落到45-55区间时加仓（健康回调买入点），震荡市在RSI<40时买入。核心改进：上涨市不再等RSI<30才买入（那样会错过大部分行情）。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 35
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.02
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 50
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 35
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.01
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 25
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": "<",
+          "value": -0.08
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 40
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_mid"
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.015
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 70
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "bb_upper"
+        }
+      ],
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.75,
+          "take_profit": 0.25,
+          "hold_days": 20
+        },
+        "downtrend": {
+          "position_size": 0.25,
+          "take_profit": 0.15,
+          "hold_days": 10
+        },
+        "sideways": {
+          "position_size": 0.45,
+          "take_profit": 0.18,
+          "hold_days": 12
+        }
+      },
+      "stop_loss": 0.08
+    },
+    "metrics": {
+      "strategy_name": "自适应RSI反转",
+      "total_return_pct": -11.36,
+      "annual_return_pct": -3.95,
+      "max_drawdown_pct": -14.04,
+      "sharpe_ratio": -1.004,
+      "num_trades": 15,
+      "win_rate_pct": 26.67,
+      "avg_pnl_pct": -2.05,
+      "avg_win_pct": 4.18,
+      "avg_loss_pct": -4.32,
+      "profit_factor": 0.97,
+      "final_capital": 88636.84,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 23.99
+    }
+  },
+  {
+    "strategy": {
+      "name": "自适应量价策略",
+      "description": "量价配合的自适应策略。核心逻辑：放量时根据趋势方向决定操作。上涨市放量上涨追入（量价齐升），下跌市放量下跌不抄底（恐慌抛售中不接飞刀），震荡市放量突破时跟进。改进：上涨市对放量上涨信号给予更大仓位和更长持有期。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.5
+        },
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.02
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma10"
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.3
+        },
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.01
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma5"
+        },
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma20"
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 2.5
+        },
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.03
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 40
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.8
+        },
+        {
+          "indicator": "pct_change",
+          "operator": ">",
+          "value": 0.02
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "bb_mid"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 3.0
+        },
+        {
+          "indicator": "pct_change",
+          "operator": "<",
+          "value": -0.03
+        }
+      ],
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.8,
+          "take_profit": 0.3,
+          "hold_days": 22
+        },
+        "downtrend": {
+          "position_size": 0.15,
+          "take_profit": 0.1,
+          "hold_days": 6
+        },
+        "sideways": {
+          "position_size": 0.35,
+          "take_profit": 0.15,
+          "hold_days": 10
+        }
+      },
+      "stop_loss": 0.07
+    },
+    "metrics": {
+      "strategy_name": "自适应量价策略",
+      "total_return_pct": -10.43,
+      "annual_return_pct": -3.61,
+      "max_drawdown_pct": -18.79,
+      "sharpe_ratio": -0.482,
+      "num_trades": 21,
+      "win_rate_pct": 33.33,
+      "avg_pnl_pct": -0.37,
+      "avg_win_pct": 10.0,
+      "avg_loss_pct": -5.55,
+      "profit_factor": 1.8,
+      "final_capital": 89573.65,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 24.93
+    }
+  },
+  {
+    "strategy": {
+      "name": "自适应综合策略",
+      "description": "多信号融合的市场环境自适应策略。综合布林带位置、RSI、均线趋势、量价关系和动量信号，根据市场环境动态加权。上涨市侧重趋势信号（均线+动量），下跌市侧重反转信号（布林带下轨+RSI超卖），震荡市侧重均值回归信号。每个信号有独立的权重，总分超过阈值才触发交易。",
+      "market_regime_conditions": {
+        "uptrend": [
+          {
+            "indicator": "ma20",
+            "operator": ">",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": ">",
+            "value_indicator": "ma20"
+          }
+        ],
+        "downtrend": [
+          {
+            "indicator": "ma20",
+            "operator": "<",
+            "value_indicator": "ma60"
+          },
+          {
+            "indicator": "close",
+            "operator": "<",
+            "value_indicator": "ma20"
+          }
+        ]
+      },
+      "entry_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 40
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.3
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": "<",
+          "value": -0.03
+        },
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma10"
+        }
+      ],
+      "entry_conditions_uptrend": [
+        {
+          "indicator": "ma5",
+          "operator": ">",
+          "value_indicator": "ma20"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma10"
+        },
+        {
+          "indicator": "pct_20d",
+          "operator": ">",
+          "value": 0.05
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.0
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 45
+        }
+      ],
+      "entry_conditions_downtrend": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 25
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": "<",
+          "value": -0.08
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.8
+        },
+        {
+          "indicator": "price_vs_ma60",
+          "operator": "<",
+          "value": -0.15
+        }
+      ],
+      "entry_conditions_sideways": [
+        {
+          "indicator": "rsi",
+          "operator": "<",
+          "value": 40
+        },
+        {
+          "indicator": "close",
+          "operator": "<",
+          "value_indicator": "bb_lower"
+        },
+        {
+          "indicator": "pct_5d",
+          "operator": "<",
+          "value": -0.04
+        },
+        {
+          "indicator": "vol_ratio",
+          "operator": ">",
+          "value": 1.2
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma60"
+        }
+      ],
+      "exit_conditions": [
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 75
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "bb_upper"
+        },
+        {
+          "indicator": "ma5",
+          "operator": "<",
+          "value_indicator": "ma10"
+        }
+      ],
+      "signal_weights_uptrend": {
+        "trend_ma": 0.3,
+        "momentum": 0.25,
+        "volume": 0.15,
+        "rsi": 0.15,
+        "bollinger": 0.15
+      },
+      "signal_weights_downtrend": {
+        "trend_ma": 0.1,
+        "momentum": 0.1,
+        "volume": 0.15,
+        "rsi": 0.35,
+        "bollinger": 0.3
+      },
+      "signal_weights_sideways": {
+        "trend_ma": 0.15,
+        "momentum": 0.15,
+        "volume": 0.2,
+        "rsi": 0.25,
+        "bollinger": 0.25
+      },
+      "entry_score_threshold": 0.6,
+      "params_by_regime": {
+        "uptrend": {
+          "position_size": 0.85,
+          "take_profit": 0.35,
+          "hold_days": 28
+        },
+        "downtrend": {
+          "position_size": 0.2,
+          "take_profit": 0.15,
+          "hold_days": 10
+        },
+        "sideways": {
+          "position_size": 0.4,
+          "take_profit": 0.2,
+          "hold_days": 15
+        }
+      },
+      "stop_loss": 0.08
+    },
+    "metrics": {
+      "strategy_name": "自适应综合策略",
+      "total_return_pct": 0.0,
+      "annual_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "sharpe_ratio": 0,
+      "num_trades": 0,
+      "win_rate_pct": 0,
+      "avg_pnl_pct": 0,
+      "avg_win_pct": 0,
+      "avg_loss_pct": 0,
+      "profit_factor": 0,
+      "final_capital": 100000,
+      "benchmark_return_pct": -35.36,
+      "alpha_pct": 35.36
+    }
+  }
+]

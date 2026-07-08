@@ -1,0 +1,212 @@
+[
+  {
+    "name": "ATR波动率风险平价策略",
+    "description": "【桥水风险平价理念】核心创新：仓位大小不是固定的，而是根据ATR波动率动态调整。低波动环境=风险预算充裕=大仓位长持有；高波动环境=风险预算紧张=小仓位快进出。这解决了现有策略在+133%大牛市中因固定仓位+止盈上限而严重跑输的核心问题。Regime定义：ATR低于其20日均线90%为低波动（理想趋势环境，重仓），ATR高于其20日均线120%为高波动（风险环境，轻仓），其余为正常。入场用简洁的趋势确认信号（close>ma20, ma5>ma10, rsi在45-70强势区间不过热）。低波动时仓位90%+止盈45%+持有40天，充分捕捉大趋势；高波动时仓位25%+止盈12%+持有7天，控制回撤。",
+    "market_regime_conditions": {
+      "uptrend": [
+        {
+          "indicator": "atr",
+          "operator": "<",
+          "derived": "atr_ma20 * 0.9",
+          "comment": "ATR低于其20日均线的90%，波动率收缩=低风险环境=风险预算充裕"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma20",
+          "comment": "价格在MA20上方，确认趋势方向向上"
+        }
+      ],
+      "downtrend": [
+        {
+          "indicator": "atr",
+          "operator": ">",
+          "derived": "atr_ma20 * 1.2",
+          "comment": "ATR高于其20日均线的120%，波动率飙升=高风险环境=风险预算紧张"
+        }
+      ]
+    },
+    "entry_conditions": [
+      {
+        "indicator": "close",
+        "operator": ">",
+        "value_indicator": "ma20",
+        "comment": "价格站上20日均线，中期趋势向上"
+      },
+      {
+        "indicator": "ma5",
+        "operator": ">",
+        "value_indicator": "ma10",
+        "comment": "短期均线金叉，短期动量向上"
+      },
+      {
+        "indicator": "rsi",
+        "operator": ">",
+        "value": 45,
+        "comment": "RSI>45，处于多头区域"
+      },
+      {
+        "indicator": "rsi",
+        "operator": "<",
+        "value": 70,
+        "comment": "RSI<70，尚未超买过热"
+      },
+      {
+        "indicator": "pct_5d",
+        "operator": ">",
+        "value": 0,
+        "comment": "近5日收益为正，短期方向确认"
+      }
+    ],
+    "exit_conditions": [
+      {
+        "indicator": "close",
+        "operator": "<",
+        "value_indicator": "ma10",
+        "comment": "价格跌破10日均线，短期趋势破坏"
+      },
+      {
+        "indicator": "pct_change",
+        "operator": "<",
+        "value": -0.04,
+        "comment": "单日跌幅超4%，异常下跌止损离场"
+      }
+    ],
+    "params_by_regime": {
+      "uptrend": {
+        "position_size": 0.90,
+        "take_profit": 0.45,
+        "hold_days": 40,
+        "comment": "低波动趋势环境：大仓位+高止盈+长持有，充分捕捉主升浪"
+      },
+      "downtrend": {
+        "position_size": 0.25,
+        "take_profit": 0.12,
+        "hold_days": 7,
+        "comment": "高波动风险环境：小仓位+低止盈+短持有，控制风险敞口"
+      },
+      "sideways": {
+        "position_size": 0.55,
+        "take_profit": 0.22,
+        "hold_days": 18,
+        "comment": "正常波动环境：中等仓位+中等参数，平衡风险收益"
+      }
+    },
+    "stop_loss": 0.08,
+    "rationale": "现有策略在+133%大牛市中跑输的根本原因：1)固定仓位无法在低风险时加仓；2)止盈上限(0.22-0.35)过早截断利润；3)持有期(15-25天)太短。本策略通过ATR波动率regime解决这三个问题：低波动时仓位90%+止盈45%+持有40天，相当于在'安全'环境下加注。这正是桥水全天候策略的核心——不是预测方向，而是根据风险环境调整敞口。ATR/ATR_MA20比率是最纯粹的波动率regime指标，不依赖方向判断，纯粹衡量'当前风险有多大'。"
+  },
+  {
+    "name": "布林带宽度Regime趋势/均值回归混合策略",
+    "description": "【Regime-Aware混合策略】核心创新：用布林带宽度（bb_upper与bb_mid的偏离度）判断当前应该用趋势跟踪还是均值回归。布林带收窄（挤压）=市场在蓄力=即将突破=趋势跟踪模式（重仓长持）；布林带扩张=波动已释放=即将回归=均值回归模式（轻仓短持）。这是你从未尝试过的维度——不是判断涨跌方向，而是判断'波动率周期位置'。入场信号设计为通用型：价格回踩MA10附近+RSI从低位回升+成交量温和放大，这个组合在趋势市中是'回调买入'，在震荡市中是'下轨反弹'，两种模式都适用。Regime只决定仓位大小和持有参数。",
+    "market_regime_conditions": {
+      "uptrend": [
+        {
+          "indicator": "bb_upper",
+          "operator": "<",
+          "derived": "bb_mid * 1.035",
+          "comment": "布林上轨距中轨<3.5%，带宽收窄=波动率压缩=挤压蓄力状态"
+        },
+        {
+          "indicator": "bb_lower",
+          "operator": ">",
+          "derived": "bb_mid * 0.965",
+          "comment": "布林下轨距中轨<3.5%，确认带宽确实很窄（双向挤压）"
+        },
+        {
+          "indicator": "close",
+          "operator": ">",
+          "value_indicator": "ma60",
+          "comment": "价格在MA60上方，大方向向上，挤压后向上突破概率大"
+        }
+      ],
+      "downtrend": [
+        {
+          "indicator": "bb_upper",
+          "operator": ">",
+          "derived": "bb_mid * 1.07",
+          "comment": "布林上轨距中轨>7%，带宽大幅扩张=波动率已释放=趋势可能衰竭"
+        },
+        {
+          "indicator": "rsi",
+          "operator": ">",
+          "value": 55,
+          "comment": "RSI仍在中高位，说明是从上涨后的高位开始扩张（非底部扩张）"
+        }
+      ]
+    },
+    "entry_conditions": [
+      {
+        "indicator": "close",
+        "operator": ">",
+        "value_indicator": "ma10",
+        "comment": "价格在MA10上方，短期趋势未破坏"
+      },
+      {
+        "indicator": "close",
+        "operator": "<",
+        "value_indicator": "bb_upper",
+        "comment": "价格未突破布林上轨，不是追高（避免假突破）"
+      },
+      {
+        "indicator": "rsi",
+        "operator": ">",
+        "value": 40,
+        "comment": "RSI>40，不在超卖区（排除下跌途中的信号）"
+      },
+      {
+        "indicator": "rsi",
+        "operator": "<",
+        "value": 65,
+        "comment": "RSI<65，不在超买区（排除追高风险）"
+      },
+      {
+        "indicator": "vol_ratio",
+        "operator": ">",
+        "value": 0.9,
+        "comment": "成交量不低于均量的90%，市场参与度正常"
+      },
+      {
+        "indicator": "pct_5d",
+        "operator": ">",
+        "value": -0.02,
+        "comment": "近5日跌幅不超过2%，排除急跌中的抄底"
+      }
+    ],
+    "exit_conditions": [
+      {
+        "indicator": "close",
+        "operator": "<",
+        "value_indicator": "ma20",
+        "comment": "价格跌破20日均线，中期趋势破坏"
+      },
+      {
+        "indicator": "rsi",
+        "operator": ">",
+        "value": 78,
+        "comment": "RSI超买>78，过热离场"
+      }
+    ],
+    "params_by_regime": {
+      "uptrend": {
+        "position_size": 0.88,
+        "take_profit": 0.40,
+        "hold_days": 35,
+        "comment": "布林挤压+趋势向上=即将突破=重仓长持捕捉大行情"
+      },
+      "downtrend": {
+        "position_size": 0.30,
+        "take_profit": 0.10,
+        "hold_days": 6,
+        "comment": "布林扩张+高位=波动已释放即将回归=轻仓短持快速获利"
+      },
+      "sideways": {
+        "position_size": 0.55,
+        "take_profit": 0.20,
+        "hold_days": 15,
+        "comment": "正常带宽=标准参数，平衡风险收益"
+      }
+    },
+    "stop_loss": 0.07,
+    "rationale": "为什么这个策略能跑赢？1)布林带挤压是A股最可靠的大行情前兆——2025年创业板+133%的行情之前必然有挤压阶段，此时重仓+长持有能充分参与；2)布林带扩张后均值回归概率>65%，此时轻仓短持做反弹，风险可控；3)入场条件设计为'回踩确认'而非'突破追高'，避免了Phase 5中布林带突破(+3.41%收益)和放量阳线(-4.62%收益)追高被套的问题。核心差异：现有策略都在判断'方向'（涨还是跌），本策略判断的是'波动率周期位置'（挤压还是扩张），这是一个正交的、未被利用的alpha来源。"
+  }
+]

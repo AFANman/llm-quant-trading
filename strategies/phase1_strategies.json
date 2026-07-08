@@ -1,0 +1,105 @@
+[
+  {
+    "name": "超卖反弹型策略",
+    "description": "利用RSI超卖信号结合缩量特征捕捉贵州茅台短期超跌反弹机会。当RSI跌破30进入超卖区域、成交量萎缩至均量60%以下表明抛压衰竭、且5日累计跌幅超过5%时入场，等待RSI回升至55以上出场获利。",
+    "entry_conditions": [
+      {"indicator": "rsi", "operator": "<", "value": 30},
+      {"indicator": "vol_ratio", "operator": "<", "value": 0.6},
+      {"indicator": "pct_5d", "operator": "<", "value": -0.05}
+    ],
+    "exit_conditions": [
+      {"indicator": "rsi", "operator": ">", "value": 55}
+    ],
+    "stop_loss": 0.05,
+    "take_profit": 0.10,
+    "hold_days": 5,
+    "position_size": 0.3
+  },
+  {
+    "name": "趋势跟踪型策略",
+    "description": "捕捉贵州茅台中期上升趋势行情。当价格站上60日均线2%以上、短期动量为正、成交量温和放大且RSI处于50以上多头区域时顺势入场，持有至趋势反转信号出现（价格跌破60日均线或短期动量转负）。",
+    "entry_conditions": [
+      {"indicator": "price_vs_ma60", "operator": ">", "value": 0.02},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.02},
+      {"indicator": "vol_ratio", "operator": ">", "value": 1.0},
+      {"indicator": "rsi", "operator": ">", "value": 50}
+    ],
+    "exit_conditions": [
+      {"indicator": "price_vs_ma60", "operator": "<", "value": -0.02},
+      {"indicator": "pct_5d", "operator": "<", "value": -0.03}
+    ],
+    "stop_loss": 0.07,
+    "take_profit": 0.20,
+    "hold_days": 0,
+    "position_size": 0.4
+  },
+  {
+    "name": "均值回归型策略",
+    "description": "基于布林带极端偏离和RSI超卖进行均值回归交易。当RSI低于25极度超卖、20日累计跌幅超过10%表明价格严重偏离均值、且成交量萎缩时入场，等待RSI回升至50以上且5日涨幅转正时出场。适用于茅台这类大盘蓝筹的震荡修复行情。",
+    "entry_conditions": [
+      {"indicator": "rsi", "operator": "<", "value": 25},
+      {"indicator": "pct_20d", "operator": "<", "value": -0.10},
+      {"indicator": "vol_ratio", "operator": "<", "value": 0.8}
+    ],
+    "exit_conditions": [
+      {"indicator": "rsi", "operator": ">", "value": 50},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.02}
+    ],
+    "stop_loss": 0.08,
+    "take_profit": 0.12,
+    "hold_days": 8,
+    "position_size": 0.3
+  },
+  {
+    "name": "动量突破型策略",
+    "description": "捕捉贵州茅台放量突破的短期强势行情。当成交量放大至均量2倍以上、单日涨幅超过2%、且5日累计涨幅超过5%形成加速上涨态势时追涨入场，短线持有3天，在量能萎缩或出现阴线时快速离场。",
+    "entry_conditions": [
+      {"indicator": "vol_ratio", "operator": ">", "value": 2.0},
+      {"indicator": "pct_change", "operator": ">", "value": 0.02},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.05}
+    ],
+    "exit_conditions": [
+      {"indicator": "vol_ratio", "operator": "<", "value": 1.0},
+      {"indicator": "pct_change", "operator": "<", "value": -0.01}
+    ],
+    "stop_loss": 0.05,
+    "take_profit": 0.15,
+    "hold_days": 3,
+    "position_size": 0.25
+  },
+  {
+    "name": "防守型策略",
+    "description": "在贵州茅台价格大幅偏离60日均线下方时寻找企稳反弹机会。当价格低于60日均线8%以上、RSI进入35以下偏弱区域、成交量持续萎缩至均量70%以下表明卖压减弱、且当日跌幅收窄（跌幅小于0.5%）显示企稳迹象时低仓位试探性建仓。",
+    "entry_conditions": [
+      {"indicator": "price_vs_ma60", "operator": "<", "value": -0.08},
+      {"indicator": "rsi", "operator": "<", "value": 35},
+      {"indicator": "vol_ratio", "operator": "<", "value": 0.7},
+      {"indicator": "pct_change", "operator": ">", "value": -0.005}
+    ],
+    "exit_conditions": [
+      {"indicator": "price_vs_ma60", "operator": ">", "value": -0.03}
+    ],
+    "stop_loss": 0.06,
+    "take_profit": 0.10,
+    "hold_days": 10,
+    "position_size": 0.2
+  },
+  {
+    "name": "混合信号型策略",
+    "description": "综合量价关系与技术指标的多维度策略。当成交量放大至均量1.5倍以上显示资金活跃、5日动量为正表明短期趋势向上、价格站上60日均线确认中期趋势、且RSI尚未进入60以上过热区域时入场，在RSI超买且量能萎缩时离场。兼顾趋势确认与风险规避。",
+    "entry_conditions": [
+      {"indicator": "vol_ratio", "operator": ">", "value": 1.5},
+      {"indicator": "pct_5d", "operator": ">", "value": 0.02},
+      {"indicator": "price_vs_ma60", "operator": ">", "value": 0.0},
+      {"indicator": "rsi", "operator": "<", "value": 60}
+    ],
+    "exit_conditions": [
+      {"indicator": "rsi", "operator": ">", "value": 70},
+      {"indicator": "vol_ratio", "operator": "<", "value": 0.8}
+    ],
+    "stop_loss": 0.06,
+    "take_profit": 0.12,
+    "hold_days": 5,
+    "position_size": 0.35
+  }
+]
